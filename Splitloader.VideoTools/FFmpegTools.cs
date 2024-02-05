@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 
@@ -8,6 +9,7 @@ namespace Splitloader.VideoTools;
 public class FFmpegTools
 {
     public readonly ObservableString FfStatus = new();
+    public readonly ObservableString ConcatStatus = new();
     private readonly string _internalLibPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
         Environment.GetEnvironmentVariable("HOME") + "/.local/share/splitloader/lib" :
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/splitloader/lib";
@@ -96,7 +98,51 @@ public class FFmpegTools
         }
     }
     
+    public async Task ConcatVideoParts(IEnumerable<string> vidParts)
     {
-        FfStatus.Value = $"Using {await FFmpegLinux.FindOrDownloadLinuxAsync()}";
+        await FindOrDownloadAsync();
+
+        var ffmpegFileList = Path.GetTempFileName();
+        var concatVideoOutput = $"{ffmpegFileList}.mp4";
+
+        await using StreamWriter ffmpegFileListStream = new(ffmpegFileList);
+        foreach (var path in vidParts)
+        {
+            await ffmpegFileListStream.WriteLineAsync($"file '{path}'");
+        }
+
+        try
+        {
+            var ffmpegProcInfo = new ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                Arguments = $"-f concat -safe 0 -i {ffmpegFileList} -c copy {concatVideoOutput}",
+                FileName = _ffmpegPath
+            };
+            var ffmpegProc = new Process();
+            ffmpegProc.Exited += (sender, e) =>
+            {
+                File.Delete(ffmpegFileList);
+                ConcatStatus.Value = ffmpegProc.ExitCode == 0 ?
+                    concatVideoOutput :
+                    "Error combining video files.";
+            };
+            ffmpegProc.ErrorDataReceived += (sender, e) =>
+            {
+                FfStatus.Value = e.Data;
+            };
+            ffmpegProc.StartInfo = ffmpegProcInfo;
+            FfStatus.Value = "Combining video files...";
+            ffmpegProc.EnableRaisingEvents = true;
+            ffmpegProc.Start();
+            ffmpegProc.BeginErrorReadLine();
+        }
+        catch (Exception e)
+        {
+            FfStatus.Value = "Error combining video files.";
+            throw;
+        }
     }
 }

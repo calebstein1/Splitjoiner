@@ -18,7 +18,7 @@
                 <Button Command="{Binding SelectFileCommand}" CommandParameter="{Binding}">
                     Select Video Files...
                 </Button>
-                <Button>
+                <Button Command="{Binding UploadCommand}" CommandParameter="{Binding}">
                     Upload
                 </Button>
             </StackPanel>
