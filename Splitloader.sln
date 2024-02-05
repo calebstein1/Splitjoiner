@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splitloader.UI", "Splitloader.UI\Splitloader.UI.csproj", "{693590F0-71FA-4A49-AFFA-3F9E173C986F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splitloader.VideoTools", "Splitloader.VideoTools\Splitloader.VideoTools.csproj", "{EA545EDA-7238-4CB3-98FD-C3526F689EEB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{693590F0-71FA-4A49-AFFA-3F9E173C986F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{693590F0-71FA-4A49-AFFA-3F9E173C986F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{693590F0-71FA-4A49-AFFA-3F9E173C986F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{693590F0-71FA-4A49-AFFA-3F9E173C986F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA545EDA-7238-4CB3-98FD-C3526F689EEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA545EDA-7238-4CB3-98FD-C3526F689EEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA545EDA-7238-4CB3-98FD-C3526F689EEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA545EDA-7238-4CB3-98FD-C3526F689EEB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

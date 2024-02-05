@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Splitloader.UI.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="600"
+             x:Class="Splitloader.UI.Views.SplitloaderView"
+             x:DataType="vm:SplitloaderViewModel">
+    
+    <DockPanel Margin="8">
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}"/>
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Video Title:"/>
+            <TextBox/>
+            <TextBlock Text="Video Description:"/>
+            <TextBox Height="128" AcceptsReturn="True"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="16">
+                <Button Command="{Binding SelectFileCommand}" CommandParameter="{Binding}">
+                    Select Video Files...
+                </Button>
+                <Button>
+                    Upload
+                </Button>
+            </StackPanel>
+            <ListBox ItemsSource="{Binding SelectedFiles}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel>
+                            <TextBlock VerticalAlignment="Center" Text="{Binding Name}"/>
+                            <Button DockPanel.Dock="Right"
+                                    HorizontalAlignment="Right"
+                                    Command="{Binding RemoveItemCommand}"
+                                    CommandParameter="{Binding}">
+                                Remove
+                            </Button>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+    </DockPanel>
+</UserControl>
