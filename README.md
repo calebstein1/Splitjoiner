@@ -1,5 +1,7 @@
 # Splitloader
 
+![Screenshot](screenshot.png)
+
 Splitloader (Split-Video Uploader... get it? Pretty creative if I do say so myself :laughing:) is a simple app that automates the processes of concatenating split video files and uploading them to Youtube (or other sources in the future).
 
 ## Purpose
@@ -15,7 +17,7 @@ This is the main UI of the app.
 It gets the video name, description, and list of video files from the user, then hands that information off to the backend for processing and uploading.
 Progress updates are reported back to the interface.
 
-#### Splitloader.VideoTools (partially implemented)
+#### Splitloader.VideoTools
 
 This is the interop layer between Splitloader and FFmpeg.
 It is used to find an FFmpeg installation on the user's system, or download one that it can use.
@@ -30,12 +32,12 @@ Youtube would still be the first to be implemented (selfish dev is thinking abou
 
 ## Progress
 
-The file picker will populate the list, but none of the useful backend logic is implemented at this point.
-The app is able to (on Linux only right now) detect the system installed FFmpeg, and if it's unable to find it, it will download a suitable statically linked version to use.
-It will display the FFmpeg version info in the status area.
-**Do not try to build and run this on Windows or Mac at this time.
-The FFmpeg code is extremely Linux only right now, refactoring it to be cross-platform is the next TODO item.**
+The app correctly finds FFmpeg installed on the system, or downloads it, and then uses it to create a concatenated video file.
+**All of this is only tested on Linux.
+It's meant to run on Windows as well, but that hasn't been tested and is probably broken.
+There is no Mac compatability at the moment.**
 
 ## What's next?
 
-Getting the FFmpeg detection happening cross-platform is the next priority, then I'll get the concat process happening, and finally the upload.
+The Youtube uploader needs to be written next.
+I'd also like to add in to QoL features, like verifying that the selected video files _can_ actually be concatenated, and other such things like that.
