@@ -1,5 +1,6 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reactive;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -11,14 +12,14 @@ namespace Splitloader.UI.ViewModels;
 
 public class SplitloaderViewModel : ViewModelBase
 {
-    internal readonly FFmpegTools FFmpeg = new();
+    private readonly FFmpegTools _ffmpeg = new();
+    private string? _concatVideoPath;
     
-    public SplitloaderViewModel()
+    internal SplitloaderViewModel()
     {
-        FFmpegTools.FfStatus.PropertyChanged += (sender, e) =>
-            Status = FFmpegTools.FfStatus.Value;
-
-        FFmpegTools.FindOrDownloadAsync();
+        _ffmpeg.FfStatus.PropertyChanged += (sender, e) =>
+            Status = _ffmpeg.FfStatus.Value;
+        Task.Run(() => _ffmpeg.FindOrDownloadAsync());
     }
 
     private ObservableCollection<SelectedFile> _selectedFiles = [];
