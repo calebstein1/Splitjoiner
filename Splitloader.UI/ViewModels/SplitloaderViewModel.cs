@@ -5,14 +5,20 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
 using Splitloader.UI.Models;
+using Splitloader.VideoTools;
 
 namespace Splitloader.UI.ViewModels;
 
 public class SplitloaderViewModel : ViewModelBase
 {
+    internal readonly FFmpegTools FFmpeg = new();
+    
     public SplitloaderViewModel()
     {
-        
+        FFmpegTools.FfStatus.PropertyChanged += (sender, e) =>
+            Status = FFmpegTools.FfStatus.Value;
+
+        FFmpegTools.FindOrDownloadAsync();
     }
 
     private ObservableCollection<SelectedFile> _selectedFiles = [];
