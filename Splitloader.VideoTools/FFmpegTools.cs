@@ -95,12 +95,12 @@ public class FFmpegTools
         }
         catch (Exception e)
         {
-            FfStatus.Value = "Something's broken with your FFmpeg. Unable to continue.";
+            FfStatus.Value = e.Message;
             throw;
         }
     }
     
-    public async Task ConcatVideoParts(IEnumerable<string> vidParts)
+    public async Task ConcatVideoParts(IEnumerable<string?> vidParts)
     {
         await FindOrDownloadAsync();
 
@@ -110,6 +110,7 @@ public class FFmpegTools
         await using StreamWriter ffmpegFileListStream = new(ffmpegFileList);
         foreach (var path in vidParts)
         {
+            if (vidParts == null) continue;
             await ffmpegFileListStream.WriteLineAsync($"file '{path}'");
         }
 
@@ -143,7 +144,7 @@ public class FFmpegTools
         }
         catch (Exception e)
         {
-            FfStatus.Value = "Error combining video files.";
+            FfStatus.Value = e.Message;
             throw;
         }
     }

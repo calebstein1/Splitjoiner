@@ -1,9 +1,5 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
 using ReactiveUI;
 using Splitloader.UI.Models;
 using Splitloader.VideoTools;
@@ -12,14 +8,15 @@ namespace Splitloader.UI.ViewModels;
 
 public class SplitloaderViewModel : ViewModelBase
 {
-    private readonly FFmpegTools _ffmpeg = new();
+    internal readonly FFmpegTools Ffmpeg = new();
     
     internal SplitloaderViewModel()
     {
-        _ffmpeg.FfStatus.PropertyChanged += (sender, e) =>
-            Status = _ffmpeg.FfStatus.Value;
-        _ffmpeg.ConcatStatus.PropertyChanged += UploadVideoAsync;
-        Task.Run(() => _ffmpeg.FindOrDownloadAsync());
+        Ffmpeg.FfStatus.PropertyChanged += (sender, e) =>
+            Status = Ffmpeg.FfStatus.Value;
+        Ffmpeg.ConcatStatus.PropertyChanged += async (sender, e) =>
+            await UiTools.UploadVideoAsync(sender, e, this);
+        Task.Run(() => Ffmpeg.FindOrDownloadAsync());
     }
 
     private ObservableCollection<SelectedFile> _selectedFiles = [];
@@ -29,7 +26,7 @@ public class SplitloaderViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedFiles, value);
     }
     
-    private string? _status = "Splitloader ready";
+    private string? _status = "Error initializing FFmpeg. Please restart app.";
     public string? Status
     {
         get => _status;
@@ -37,35 +34,8 @@ public class SplitloaderViewModel : ViewModelBase
     }
 
     public ReactiveCommand<SplitloaderViewModel, Task> SelectFileCommand { get; } =
-        ReactiveCommand.Create<SplitloaderViewModel, Task>(SelectFileAsync);
+        ReactiveCommand.Create<SplitloaderViewModel, Task>(UiTools.SelectFileAsync);
 
-    private static async Task SelectFileAsync(SplitloaderViewModel vm)
-    {
-        var storageProvider = new Window().StorageProvider;
-        var file = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Select Video File...",
-            FileTypeFilter = new[] { VideoFileTypes.Types }
-        });
-        var fileToAdd = new SelectedFile(vm)
-        {
-            Name = file[0].Name,
-            Path = file[0].TryGetLocalPath()
-        };
-        vm.SelectedFiles.Add(fileToAdd);
-    }
-    
     public ReactiveCommand<SplitloaderViewModel, Task> UploadCommand { get; } =
-        ReactiveCommand.Create<SplitloaderViewModel, Task>(ConcatVideoAsync);
-
-    private static async Task ConcatVideoAsync(SplitloaderViewModel vm)
-    {
-        var videoPartPaths = vm.SelectedFiles.Select(videoPart => videoPart.Path).ToList();
-        await vm._ffmpeg.ConcatVideoParts(videoPartPaths);
-    }
-
-    private void UploadVideoAsync(object? sender, PropertyChangedEventArgs e)
-    {
-        Status = $"Got {_ffmpeg.ConcatStatus.Value}";
-    }
+        ReactiveCommand.Create<SplitloaderViewModel, Task>(UiTools.ConcatVideoAsync);
 }
