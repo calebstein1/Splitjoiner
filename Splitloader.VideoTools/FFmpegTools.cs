@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Runtime.Loader;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 
@@ -11,8 +10,8 @@ public class FFmpegTools
     public readonly ObservableString FfStatus = new();
     public readonly ObservableString ConcatStatus = new();
     private readonly string _internalLibPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-        Environment.GetEnvironmentVariable("HOME") + "/.local/share/splitloader/lib" :
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/splitloader/lib";
+        Path.Join(Environment.GetEnvironmentVariable("HOME"), ".local/share/splitloader/lib") :
+        Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "splitloader/lib");
     private readonly List<string> _linuxPaths;
     private readonly List<string> _windowsPaths;
     private string? _ffmpegPath;
@@ -24,12 +23,12 @@ public class FFmpegTools
         [
             "/usr/bin/ffmpeg",
             "/usr/local/bin/ffmpeg",
-            $"{_internalLibPath}/ffmpeg"
+            Path.Join(_internalLibPath, "ffmpeg")
         ];
 
         _windowsPaths =
         [
-            $"{_internalLibPath}/ffmpeg"
+            Path.Join(_internalLibPath, "ffmpeg.exe")
         ];
     }
 
@@ -46,19 +45,20 @@ public class FFmpegTools
         if (_ffmpegPath == null)
         {
             FfStatus.Value = "Downloading FFmpeg...";
-            var downloadUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                ? new Uri("https://johnvansickle/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz")
-                : new Uri("https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z");
+            var downloadUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
+                new Uri("https://johnvansickle/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz") :
+                new Uri("https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z");
+            var outFile = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "ffmpeg.tar.xz" : "ffmpeg.7z";
                 
             Directory.CreateDirectory(_internalLibPath);
 
             var httpClient = new HttpClient();
             await using var stream = await httpClient.GetStreamAsync(downloadUrl);
-            await using var fileStream = new FileStream($"{_internalLibPath}/ffmpeg.tar.xz", FileMode.CreateNew);
+            await using var fileStream = new FileStream(Path.Join(_internalLibPath, outFile), FileMode.CreateNew);
             await stream.CopyToAsync(fileStream);
 
             FfStatus.Value = "Extracting FFmpeg...";
-            await using Stream archiveStream = File.OpenRead($"{_internalLibPath}/ffmpeg.tar.xz");
+            await using Stream archiveStream = File.OpenRead(Path.Join(_internalLibPath, outFile));
             using var reader = ReaderFactory.Open(archiveStream);
             reader.WriteAllToDirectory(_internalLibPath, new ExtractionOptions
             {
@@ -67,9 +67,11 @@ public class FFmpegTools
             });
 
             FfStatus.Value = "Cleaning up...";
-            File.Delete($"{_internalLibPath}/ffmpeg.tar.xz");
+            File.Delete(Path.Join(_internalLibPath, outFile));
 
-            _ffmpegPath = $"{_internalLibPath}/ffmpeg";
+            _ffmpegPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
+                Path.Join(_internalLibPath, "ffmpeg") :
+                Path.Join(_internalLibPath, "ffmpeg.exe");
             
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 File.SetUnixFileMode(_ffmpegPath, UnixFileMode.UserExecute);
