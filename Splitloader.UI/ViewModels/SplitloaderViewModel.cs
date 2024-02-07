@@ -45,7 +45,8 @@ public class SplitloaderViewModel : ViewModelBase
         var storageProvider = new Window().StorageProvider;
         var file = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Select Video File..."
+            Title = "Select Video File...",
+            FileTypeFilter = new[] { VideoFileTypes.Types }
         });
         var fileToAdd = new SelectedFile(vm)
         {
