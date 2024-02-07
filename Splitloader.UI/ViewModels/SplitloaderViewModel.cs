@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -18,8 +18,7 @@ public class SplitloaderViewModel : ViewModelBase
     {
         _ffmpeg.FfStatus.PropertyChanged += (sender, e) =>
             Status = _ffmpeg.FfStatus.Value;
-        _ffmpeg.ConcatStatus.PropertyChanged += (sender, e) =>
-            DoUploadAsync();
+        _ffmpeg.ConcatStatus.PropertyChanged += UploadVideoAsync;
         Task.Run(() => _ffmpeg.FindOrDownloadAsync());
     }
 
@@ -57,15 +56,15 @@ public class SplitloaderViewModel : ViewModelBase
     }
     
     public ReactiveCommand<SplitloaderViewModel, Task> UploadCommand { get; } =
-        ReactiveCommand.Create<SplitloaderViewModel, Task>(UploadVideoAsync);
+        ReactiveCommand.Create<SplitloaderViewModel, Task>(ConcatVideoAsync);
 
-    private static async Task UploadVideoAsync(SplitloaderViewModel vm)
+    private static async Task ConcatVideoAsync(SplitloaderViewModel vm)
     {
         var videoPartPaths = vm.SelectedFiles.Select(videoPart => videoPart.Path).ToList();
         await vm._ffmpeg.ConcatVideoParts(videoPartPaths);
     }
 
-    private void DoUploadAsync()
+    private void UploadVideoAsync(object? sender, PropertyChangedEventArgs e)
     {
         Status = $"Got {_ffmpeg.ConcatStatus.Value}";
     }
