@@ -130,7 +130,7 @@ public class FFmpegTools
                 File.Delete(ffmpegFileList);
                 ConcatStatus.Value = ffmpegProc.ExitCode == 0 ?
                     concatVideoOutput :
-                    "Error combining video files.";
+                    "failed";
             };
             ffmpegProc.ErrorDataReceived += (sender, e) =>
             {

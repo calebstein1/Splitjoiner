@@ -1,10 +1,14 @@
+using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Splitloader.UI.Models;
 using Splitloader.UI.ViewModels;
+using Splitloader.UploadServices.Common;
+using Splitloader.UploadServices.YouTube;
 
 namespace Splitloader.UI;
 
@@ -34,6 +38,13 @@ internal static class UiTools
 
     internal static async Task UploadVideoAsync(object? sender, PropertyChangedEventArgs e, SplitloaderViewModel vm)
     {
-        await Task.Run(() => vm.Status = $"Got {vm.Ffmpeg.ConcatStatus.Value}");
+        if (vm.Ffmpeg.ConcatStatus.Value is "failed" or null)
+        {
+            vm.Status = "Failed to combine videos";
+            return;
+        }
+        await Service.UploadVideoAsync(new VideoUpload(vm.VideoTitle, vm.VideoDescription,
+            vm.Ffmpeg.ConcatStatus.Value));
+        File.Delete(vm.Ffmpeg.ConcatStatus.Value);
     }
 }

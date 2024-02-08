@@ -11,9 +11,9 @@
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}"/>
         <StackPanel Orientation="Vertical">
             <TextBlock Text="Video Title:"/>
-            <TextBox/>
+            <TextBox Text="{Binding VideoTitle}"/>
             <TextBlock Text="Video Description:"/>
-            <TextBox Height="128" AcceptsReturn="True"/>
+            <TextBox Text="{Binding VideoDescription}" Height="128" AcceptsReturn="True"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="16">
                 <Button Command="{Binding SelectFileCommand}" CommandParameter="{Binding}">
                     Select Video Files...

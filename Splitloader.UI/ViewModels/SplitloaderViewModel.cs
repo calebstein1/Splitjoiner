@@ -2,18 +2,25 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ReactiveUI;
 using Splitloader.UI.Models;
+using Splitloader.UploadServices.YouTube;
 using Splitloader.VideoTools;
 
 namespace Splitloader.UI.ViewModels;
 
 public class SplitloaderViewModel : ViewModelBase
 {
+    internal string VideoTitle { get; set; }
+    internal string VideoDescription { get; set; }
+    
     internal readonly FFmpegTools Ffmpeg = new();
+    
     
     internal SplitloaderViewModel()
     {
         Ffmpeg.FfStatus.PropertyChanged += (sender, e) =>
             Status = Ffmpeg.FfStatus.Value;
+        Service.UiStatus.PropertyChanged += (sender, e) =>
+            Status = Service.UiStatus.Value;
         Ffmpeg.ConcatStatus.PropertyChanged += async (sender, e) =>
             await UiTools.UploadVideoAsync(sender, e, this);
         Task.Run(() => Ffmpeg.FindOrDownloadAsync());
