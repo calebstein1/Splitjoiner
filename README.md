@@ -7,7 +7,7 @@ Splitloader (Split-Video Uploader... get it? Pretty creative if I do say so myse
 ## Purpose
 
 Splitloader is meant to make my life easier.
-I manage the Youtube page for my church (check it out [here](https://www.youtube.com/@stelizabethorthodoxpoulsbo)!), and so this is simply meant to eliminate the manual steps of concatenating the video files our GoPro produces and doing the upload by using Google's Youtube API.
+I manage the YouTube page for my church (check it out [here](https://www.youtube.com/@stelizabethorthodoxpoulsbo)!), and so this is simply meant to eliminate the manual steps of concatenating the video files our GoPro produces and doing the upload by using Google's YouTube API.
 
 ## Architecture
 
@@ -23,21 +23,25 @@ This is the interop layer between Splitloader and FFmpeg.
 It is used to find an FFmpeg installation on the user's system, or download one that it can use.
 Using the list of video files provided by the UI and FFmpeg, it will produce a concatenated video file without re-encoding, which will then be handed to the uploader.
 
-#### Splitloader.Uploader (not yet implemented)
+#### Splitloader.UploadServices.Common
 
-This will handle the actual interfacing with the Youtube API to upload the video.
-I may implement this is an abstraction layer that defines an interface `IUploadService`, which could be used with any number of video services besides just Youtube.
-This would mean that there would be Splitloader.UploadService.* assemblies for each potential upload service, each of which would implement IUploadService.
-Youtube would still be the first to be implemented (selfish dev is thinking about his own needs first!), but ideally this could be built as a plugin system where each Splitloader.UploadService dll would be loaded dynamically at runtime, allowing the user to freely switch between any installed backend, and developers to implement whichever services they wish.
+This contains definitions that are common across any video platform and can be used by other Splitloader.UploadServices assemblies in the future.
+The reason for keeping this as a separate assembly is exactly to allow for other services to be added more easily.
+
+#### Splitloader.UploadServices.YouTube
+
+This handles the interactions with Google's YouTube API.
+It, when provided with the JSON file Google provides for OAuth2, uploads the concatenated video file created by VideoTools along with the title and description set in the UI.
+Upload progress is reported back to the status bar in the UI.
 
 ## Progress
 
-The app correctly finds FFmpeg installed on the system, or downloads it, and then uses it to create a concatenated video file.
+All the basic functionality is there (on Linux).
+Splitloader correctly finds or downloads FFmpeg, concatenates video files, and uploads the concatenated file to YouTube.
 **All of this is only tested on Linux.
 It's meant to run on Windows as well, but that hasn't been tested and is probably broken.
 There is no Mac compatability at the moment.**
 
 ## What's next?
 
-The Youtube uploader needs to be written next.
-I'd also like to add in to QoL features, like verifying that the selected video files _can_ actually be concatenated, and other such things like that.
+The next steps, now that the core functionality is done, include decoupling the YouTube uploader from the UI so that more services can be added; and adding proper cross-platform support, rather than just being Linux-only as it is now.
