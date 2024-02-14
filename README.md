@@ -4,6 +4,13 @@
 
 Splitloader (Split-Video Uploader... get it? Pretty creative if I do say so myself :laughing:) is a simple app that automates the processes of concatenating split video files and uploading them to Youtube (or other sources in the future).
 
+## NOTICE
+
+Google will mark any video uploaded to YouTube using unverified API access as locked private with no option to appeal.
+What this means, unfortunately, is that if you'd actually like to use this for uploading, you'll have to go through Google's API approval process.
+If anyone knows a way around this that doesn't break YouTube TOS, I'd welcome an issue or PR.
+In the meantime, I'll be adding a button to the UI to just concatenate videos and skip the upload step.
+
 ## Purpose
 
 Splitloader is meant to make my life easier.

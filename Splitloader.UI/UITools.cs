@@ -43,8 +43,9 @@ internal static class UiTools
             vm.Status = "Failed to combine videos";
             return;
         }
-        await Service.UploadVideoAsync(new VideoUpload(vm.VideoTitle, vm.VideoDescription,
+        /*await Service.UploadVideoAsync(new VideoUpload(vm.VideoTitle, vm.VideoDescription,
             vm.Ffmpeg.ConcatStatus.Value));
-        File.Delete(vm.Ffmpeg.ConcatStatus.Value);
+        File.Delete(vm.Ffmpeg.ConcatStatus.Value);*/
+        vm.Status = $"Got {vm.Ffmpeg.ConcatStatus.Value}";
     }
 }
