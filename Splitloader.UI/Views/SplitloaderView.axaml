@@ -18,6 +18,9 @@
                 <Button Command="{Binding SelectFileCommand}" CommandParameter="{Binding}">
                     Select Video Files...
                 </Button>
+                <Button Command="{Binding ConcatCommand}" CommandParameter="{Binding}">
+                    Concat Without Upload
+                </Button>
                 <Button Command="{Binding UploadCommand}" CommandParameter="{Binding}">
                     Upload
                 </Button>

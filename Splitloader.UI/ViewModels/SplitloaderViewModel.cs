@@ -11,6 +11,7 @@ public class SplitloaderViewModel : ViewModelBase
 {
     internal string VideoTitle { get; set; }
     internal string VideoDescription { get; set; }
+    internal bool DoUpload = false;
     
     internal readonly FFmpegTools Ffmpeg = new();
     
@@ -43,6 +44,9 @@ public class SplitloaderViewModel : ViewModelBase
     public ReactiveCommand<SplitloaderViewModel, Task> SelectFileCommand { get; } =
         ReactiveCommand.Create<SplitloaderViewModel, Task>(UiTools.SelectFileAsync);
 
-    public ReactiveCommand<SplitloaderViewModel, Task> UploadCommand { get; } =
+    public ReactiveCommand<SplitloaderViewModel, Task> ConcatCommand { get; } =
         ReactiveCommand.Create<SplitloaderViewModel, Task>(UiTools.ConcatVideoAsync);
+    
+    public ReactiveCommand<SplitloaderViewModel, Task> UploadCommand { get; } =
+        ReactiveCommand.Create<SplitloaderViewModel, Task>(UiTools.ConcatAndUploadVideoAsync);
 }
