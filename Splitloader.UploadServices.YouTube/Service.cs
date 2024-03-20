@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.Http;
 using Google.Apis.Services;
 using Google.Apis.Upload;
 using Google.Apis.YouTube.v3;

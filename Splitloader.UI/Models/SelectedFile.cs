@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading.Tasks;
 using ReactiveUI;
 using Splitloader.UI.ViewModels;
