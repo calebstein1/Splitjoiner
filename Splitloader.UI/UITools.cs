@@ -74,7 +74,7 @@ internal static class UiTools
 
         if (vm.DoUpload)
         {
-            await Service.UploadVideoAsync(new VideoUpload(vm.VideoTitle, vm.VideoDescription,
+            await Service.UploadVideoAsync(new VideoUpload(vm.VideoTitle ?? "New Video", vm.VideoDescription ?? "",
                 vm.Ffmpeg.ConcatStatus.Value));
             File.Delete(vm.Ffmpeg.ConcatStatus.Value);
             vm.DoUpload = false;

@@ -9,8 +9,8 @@ namespace Splitloader.UI.ViewModels;
 
 public class SplitloaderViewModel : ViewModelBase
 {
-    internal string VideoTitle { get; set; }
-    internal string VideoDescription { get; set; }
+    internal string? VideoTitle { get; set; }
+    internal string? VideoDescription { get; set; }
     internal bool DoUpload = false;
     
     internal readonly FFmpegTools Ffmpeg = new();
