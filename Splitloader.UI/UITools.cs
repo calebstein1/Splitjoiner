@@ -22,12 +22,34 @@ internal static class UiTools
             Title = "Select Video File...",
             FileTypeFilter = new[] { VideoFileTypes.Types }
         });
+        var dir = Path.GetDirectoryName(file[0].TryGetLocalPath());
         var fileToAdd = new SelectedFile(vm)
         {
             Name = file[0].Name,
-            Path = file[0].TryGetLocalPath()
+            Path = Path.Combine(dir ?? throw new InvalidOperationException(), file[0].Name)
         };
         vm.SelectedFiles.Add(fileToAdd);
+
+        if (fileToAdd.Name[..2] == "GH")
+        {
+            var i = 0;
+            while (true)
+            {
+                var nextFileNum = (int.Parse(fileToAdd.Name[2..4]) + ++i).ToString();
+                if (nextFileNum.Length == 1)
+                {
+                    nextFileNum = $"0{nextFileNum}";
+                }
+                var nextFileName = $"GH{nextFileNum}{fileToAdd.Name[4..]}";
+                if (!File.Exists(Path.Combine(dir, nextFileName))) break;
+                var nextFileToAdd = new SelectedFile(vm)
+                {
+                    Name = nextFileName,
+                    Path = Path.Combine(dir, nextFileName)
+                };
+                vm.SelectedFiles.Add(nextFileToAdd);
+            }
+        }
     }
 
     internal static async Task ConcatVideoAsync(SplitloaderViewModel vm)
