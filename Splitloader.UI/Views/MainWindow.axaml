@@ -8,7 +8,7 @@
         x:Class="Splitloader.UI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Splitloader.UI">
+        Title="Splitjoiner">
 
 <views:SplitloaderView DataContext="{Binding Splitloader}"/>
 </Window>

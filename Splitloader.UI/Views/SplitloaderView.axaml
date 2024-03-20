@@ -10,21 +10,6 @@
     <DockPanel Margin="8">
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}"/>
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="Video Title:"/>
-            <TextBox Text="{Binding VideoTitle}"/>
-            <TextBlock Text="Video Description:"/>
-            <TextBox Text="{Binding VideoDescription}" Height="128" AcceptsReturn="True"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="16">
-                <Button Command="{Binding SelectFileCommand}" CommandParameter="{Binding}">
-                    Select Video Files...
-                </Button>
-                <Button Command="{Binding ConcatCommand}" CommandParameter="{Binding}">
-                    Concat Without Upload
-                </Button>
-                <Button Command="{Binding UploadCommand}" CommandParameter="{Binding}">
-                    Upload
-                </Button>
-            </StackPanel>
             <ListBox ItemsSource="{Binding SelectedFiles}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -40,6 +25,14 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="16">
+                <Button Command="{Binding SelectFileCommand}" CommandParameter="{Binding}">
+                    Select Video Files...
+                </Button>
+                <Button Command="{Binding ConcatCommand}" CommandParameter="{Binding}">
+                    Combine
+                </Button>
+            </StackPanel>
         </StackPanel>
     </DockPanel>
 </UserControl>

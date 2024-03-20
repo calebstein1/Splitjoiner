@@ -100,7 +100,7 @@ public class FFmpegTools
         }
     }
     
-    public async Task ConcatVideoParts(IEnumerable<string?> vidParts)
+    public async Task ConcatVideoParts(IEnumerable<string> vidParts)
     {
         await FindOrDownloadAsync();
 
