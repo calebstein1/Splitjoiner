@@ -1,20 +1,34 @@
-# Splitloader
+# Splitjoiner
 
 ![Screenshot](screenshot.png)
 
-Splitloader (Split-Video Uploader... get it? Pretty creative if I do say so myself :laughing:) is a simple app that automates the processes of concatenating split video files and uploading them to Youtube (or other sources in the future).
-
-## NOTICE
-
-Google will mark any video uploaded to YouTube using unverified API access as locked private with no option to appeal.
-What this means, unfortunately, is that if you'd actually like to use this for uploading, you'll have to go through Google's API approval process.
-If anyone knows a way around this that doesn't break YouTube TOS, I'd welcome an issue or PR.
-In the meantime, I'll be adding a button to the UI to just concatenate videos and skip the upload step.
+Splitjoiner (Split-Video Joiner... get it? Pretty creative if I do say so myself :laughing:) is a simple app that automates the processes of concatenating split video files.
 
 ## Purpose
 
-Splitloader is meant to make my life easier.
-I manage the YouTube page for my church (check it out [here](https://www.youtube.com/@stelizabethorthodoxpoulsbo)!), and so this is simply meant to eliminate the manual steps of concatenating the video files our GoPro produces and doing the upload by using Google's YouTube API.
+Splitjoiner is meant to make my life easier.
+I manage the YouTube page for my church (check it out [here](https://www.youtube.com/@stelizabethorthodoxpoulsbo)!), and so this is simply meant to eliminate the manual steps of concatenating the video files our GoPro produces.
+
+## Functionality
+
+Splitjoiner allows you to select multiple video files which it will use FFmpeg to combine.
+If the video files came from a GoPro and follow the GoPro naming convention (GHXXXXXX.MP4 where the first two numerical digits are the part number), Splitjoiner will automatically add each sequential file to the list.
+Due to Google's API restrictions, I've removed the broken uploading code completely (and renamed from Splitloader to Splitjoiner).
+This code is still available in the splitloader branch, and maybe one day I'll be able to re-integrate that functionality, but I'm not holding my breath.
+
+## Building
+
+At the moment Linux is the only supported OS.
+There's broken Windows support built in, and MacOS support is on the way.
+The only hard dependencies of Splitjoiner are .NET 8 and AvaloniaUI.
+It's recommended that you have FFmpeg installed on your system, but if you don't for some reason, Splitjoiner will download it automatically.
+Once the dependencies are met, you can build and run with the following:
+
+```Bash
+git clone https://github.com/calebstein1/Splitjoiner
+cd Splitjoiner/Splitloader.UI
+dotnet run
+```
 
 ## Architecture
 
@@ -29,26 +43,3 @@ Progress updates are reported back to the interface.
 This is the interop layer between Splitloader and FFmpeg.
 It is used to find an FFmpeg installation on the user's system, or download one that it can use.
 Using the list of video files provided by the UI and FFmpeg, it will produce a concatenated video file without re-encoding, which will then be handed to the uploader.
-
-#### Splitloader.UploadServices.Common
-
-This contains definitions that are common across any video platform and can be used by other Splitloader.UploadServices assemblies in the future.
-The reason for keeping this as a separate assembly is exactly to allow for other services to be added more easily.
-
-#### Splitloader.UploadServices.YouTube
-
-This handles the interactions with Google's YouTube API.
-It, when provided with the JSON file Google provides for OAuth2, uploads the concatenated video file created by VideoTools along with the title and description set in the UI.
-Upload progress is reported back to the status bar in the UI.
-
-## Progress
-
-All the basic functionality is there (on Linux).
-Splitloader correctly finds or downloads FFmpeg, concatenates video files, and uploads the concatenated file to YouTube.
-**All of this is only tested on Linux.
-It's meant to run on Windows as well, but that hasn't been tested and is probably broken.
-There is no Mac compatability at the moment.**
-
-## What's next?
-
-The next steps, now that the core functionality is done, include decoupling the YouTube uploader from the UI so that more services can be added; and adding proper cross-platform support, rather than just being Linux-only as it is now.
