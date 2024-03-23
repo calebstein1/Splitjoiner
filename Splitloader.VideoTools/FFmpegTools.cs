@@ -5,30 +5,67 @@ using SharpCompress.Readers;
 
 namespace Splitloader.VideoTools;
 
+internal enum OperatingSystem
+{
+    Windows,
+    Mac,
+    Linux
+}
+
 public class FFmpegTools
 {
+    private OperatingSystem _os;
     public readonly ObservableString FfStatus = new();
     public readonly ObservableString ConcatStatus = new();
-    private readonly string _internalLibPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-        Path.Join(Environment.GetEnvironmentVariable("HOME"), ".local/share/splitloader/lib") :
-        Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "splitloader/lib");
-    private readonly List<string> _linuxPaths;
+    private string _internalBinPath;
     private readonly List<string> _windowsPaths;
+    private readonly List<string> _macPaths;
+    private readonly List<string> _linuxPaths;
     private string? _ffmpegPath;
     private Task? _initTask;
 
     public FFmpegTools()
     {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            _os = OperatingSystem.Windows;
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            _os = OperatingSystem.Mac;
+        }
+        else
+        {
+            _os = OperatingSystem.Linux;
+        }
+
+        _internalBinPath = _os switch
+        {
+            OperatingSystem.Windows =>
+                Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "splitloader/bin"),
+            OperatingSystem.Mac =>
+                Path.Join(Environment.GetEnvironmentVariable("HOME"), "Library/Application Support/splitloader/bin"),
+            _ =>
+                Path.Join(Environment.GetEnvironmentVariable("HOME"), ".local/share/splitloader/bin")
+        };
+        
+        _windowsPaths =
+        [
+            Path.Join(_internalBinPath, "ffmpeg.exe")
+        ];
+
+        _macPaths =
+        [
+            "/opt/local/bin/ffmpeg",
+            "/usr/local/bin/ffmpeg",
+            Path.Join(_internalBinPath, "ffmpeg")
+        ];
+        
         _linuxPaths =
         [
             "/usr/bin/ffmpeg",
             "/usr/local/bin/ffmpeg",
-            Path.Join(_internalLibPath, "ffmpeg")
-        ];
-
-        _windowsPaths =
-        [
-            Path.Join(_internalLibPath, "ffmpeg.exe")
+            Path.Join(_internalBinPath, "ffmpeg")
         ];
     }
 
@@ -39,42 +76,60 @@ public class FFmpegTools
 
     private async Task InitFfmpegAsync()
     {
-        _ffmpegPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-            _linuxPaths.FirstOrDefault(File.Exists) :
-            _windowsPaths.FirstOrDefault(File.Exists);
+        _ffmpegPath = _os switch
+        {
+            OperatingSystem.Windows => _windowsPaths.FirstOrDefault(File.Exists),
+            OperatingSystem.Mac => _macPaths.FirstOrDefault(File.Exists),
+            _ => _linuxPaths.FirstOrDefault(File.Exists)
+        };
+        
         if (_ffmpegPath == null)
         {
             FfStatus.Value = "Downloading FFmpeg...";
-            var downloadUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-                new Uri("https://johnvansickle/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz") :
-                new Uri("https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z");
-            var outFile = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "ffmpeg.tar.xz" : "ffmpeg.7z";
+            var downloadUrl = _os switch
+            {
+                OperatingSystem.Windows => new Uri("https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z"),
+                OperatingSystem.Mac => new Uri("https://evermeet.cx/ffmpeg/getrelease/zip"),
+                _ => new Uri("https://johnvansickle/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz")
+            };
+            var outFile = _os switch
+            {
+                OperatingSystem.Windows => "ffmpeg.7z",
+                OperatingSystem.Mac => "ffmpeg.zip",
+                _ => "ffmpeg.tar.xz"
+            };
                 
-            Directory.CreateDirectory(_internalLibPath);
+            Directory.CreateDirectory(_internalBinPath);
 
             var httpClient = new HttpClient();
             await using var stream = await httpClient.GetStreamAsync(downloadUrl);
-            await using var fileStream = new FileStream(Path.Join(_internalLibPath, outFile), FileMode.CreateNew);
+            await using var fileStream = new FileStream(Path.Join(_internalBinPath, outFile), FileMode.CreateNew);
             await stream.CopyToAsync(fileStream);
 
             FfStatus.Value = "Extracting FFmpeg...";
-            await using Stream archiveStream = File.OpenRead(Path.Join(_internalLibPath, outFile));
+            await using Stream archiveStream = File.OpenRead(Path.Join(_internalBinPath, outFile));
             using var reader = ReaderFactory.Open(archiveStream);
-            reader.WriteAllToDirectory(_internalLibPath, new ExtractionOptions
+            reader.WriteAllToDirectory(_internalBinPath, new ExtractionOptions
             {
                 ExtractFullPath = false,
                 Overwrite = true
             });
 
             FfStatus.Value = "Cleaning up...";
-            File.Delete(Path.Join(_internalLibPath, outFile));
+            File.Delete(Path.Join(_internalBinPath, outFile));
 
-            _ffmpegPath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ?
-                Path.Join(_internalLibPath, "ffmpeg") :
-                Path.Join(_internalLibPath, "ffmpeg.exe");
-            
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            _ffmpegPath = _os switch
+            {
+                OperatingSystem.Windows => Path.Join(_internalBinPath, "ffmpeg.exe"),
+                _ => Path.Join(_internalBinPath, "ffmpeg")
+            };
+
+            #pragma warning disable CA1416
+            if (_os != OperatingSystem.Windows)
+            {
                 File.SetUnixFileMode(_ffmpegPath, UnixFileMode.UserExecute);
+            }
+            #pragma warning restore CA1416
         }
 
         try
