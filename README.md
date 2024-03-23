@@ -18,10 +18,11 @@ This code is still available in the splitloader branch, and maybe one day I'll b
 
 ## Building
 
-At the moment Linux is the only supported OS.
-There's broken Windows support built in, and MacOS support is on the way.
+At the moment Linux is the only supported OS, with MacOS support being experimental.
+There's broken Windows support built in, but it's broken at the moment.
 The only hard dependencies of Splitjoiner are .NET 8 and AvaloniaUI.
 It's recommended that you have FFmpeg installed on your system, but if you don't for some reason, Splitjoiner will download it automatically.
+FFmpeg detection isn't working reliably on MacOS at the moment, which is why support is considered experimental.
 Once the dependencies are met, you can build and run with the following:
 
 ```Bash
