@@ -53,7 +53,7 @@ internal static class UiTools
     internal static async Task ConcatVideoAsync(SplitloaderViewModel vm)
     {
         var videoPartPaths = vm.SelectedFiles.Select(videoPart => videoPart.Path).ToList();
-        await vm.Ffmpeg.ConcatVideoParts(videoPartPaths);
+        await vm.Ffmpeg.ConcatVideoParts(videoPartPaths, vm.OutputName);
     }
 
     internal static void DisplayConcatResult(object? sender, PropertyChangedEventArgs e, SplitloaderViewModel vm)

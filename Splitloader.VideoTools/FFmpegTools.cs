@@ -155,17 +155,22 @@ public class FFmpegTools
         }
     }
     
-    public async Task ConcatVideoParts(IEnumerable<string> vidParts)
+    public async Task ConcatVideoParts(IEnumerable<string?> vidParts, string? outputName)
     {
         await FindOrDownloadAsync();
+        if (outputName is null)
+        {
+            FfStatus.Value = "Must specify an output file name";
+            return;
+        }
 
         var ffmpegFileList = Path.GetTempFileName();
-        var concatVideoOutput = $"{ffmpegFileList}.mp4";
+        var concatVideoOutput = Path.Join(Environment.GetEnvironmentVariable("HOME"), outputName);
 
         await using StreamWriter ffmpegFileListStream = new(ffmpegFileList);
         foreach (var path in vidParts)
         {
-            if (vidParts == null) continue;
+            if (path is null) continue;
             await ffmpegFileListStream.WriteLineAsync($"file '{path}'");
         }
 

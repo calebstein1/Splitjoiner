@@ -10,6 +10,10 @@
     <DockPanel Margin="8">
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}"/>
         <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="16">
+                <TextBlock Text="Output Filename:" />
+                <TextBox Text="{Binding OutputName}" Width="360" />
+            </StackPanel>
             <ListBox ItemsSource="{Binding SelectedFiles}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

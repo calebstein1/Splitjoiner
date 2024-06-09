@@ -9,7 +9,7 @@ namespace Splitloader.UI.ViewModels;
 public class SplitloaderViewModel : ViewModelBase
 {
     internal readonly FFmpegTools Ffmpeg = new();
-    
+    internal string? OutputName { get; set; }
     
     internal SplitloaderViewModel()
     {
